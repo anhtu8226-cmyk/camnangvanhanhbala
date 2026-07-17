@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cẩm nang vận hành — Ba Lá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F1E3; --card:#FFFFFF; --maroon:#7A1F3A; --maroon-dark:#5C1729;
+    --ink:#2C2620; --ink-soft:#6B6258; --ink-mute:#9A9186; --line:#E9E1CF;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;}
+  h1,h2,h3{font-family:'Fraunces',serif;margin:0;}
+
+  /* ---------- HEADER ---------- */
+  header.top{background:var(--maroon);color:#fff;padding:16px 24px;position:sticky;top:0;z-index:50;}
+  .top-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{width:44px;height:44px;border-radius:50%;background:#fff;color:var(--maroon);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;font-family:'Fraunces',serif;flex-shrink:0;}
+  .brand-name{font-weight:700;font-size:18px;letter-spacing:.03em;}
+  .brand-sub{font-size:12px;opacity:.8;letter-spacing:.04em;}
+  .manual-title{text-align:right;}
+  .manual-title h1{font-size:26px;font-weight:700;}
+  .manual-meta{font-size:13px;opacity:.85;margin-top:4px;}
+  .manual-meta span[contenteditable="true"]{border-bottom:1px dashed rgba(255,255,255,.5);cursor:text;}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .btn{border:none;padding:9px 16px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;}
+  .btn.dark{background:rgba(255,255,255,.12);color:#fff;}
+  .btn.dark:hover{background:rgba(255,255,255,.2);}
+  .btn.light{background:#fff;color:var(--maroon);}
+  .btn.light:hover{background:#F3E7EC;}
+  .btn.on{background:#F5C86E;color:#4A3300;}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:flex;max-width:1500px;margin:0 auto;}
+  aside.sidebar{width:280px;flex-shrink:0;padding:20px 12px 60px;position:sticky;top:132px;align-self:flex-start;height:calc(100vh - 132px);overflow-y:auto;}
+  .sec-label{font-size:12px;font-weight:700;color:var(--ink-mute);letter-spacing:.05em;text-transform:uppercase;padding:14px 12px 6px;display:flex;align-items:center;gap:7px;}
+  .sub-link{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-soft);text-decoration:none;font-size:14.5px;margin-bottom:2px;}
+  .sub-link:hover{background:#EFE6D4;color:var(--ink);}
+  .sub-link.active{background:var(--maroon);color:#fff;font-weight:600;}
+
+  main.content{flex:1;padding:28px 32px 100px;min-width:0;}
+  section.block{margin-bottom:44px;scroll-margin-top:150px;}
+  section.block > h2{font-size:22px;color:var(--maroon-dark);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--line);}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;}
+
+  .doc-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;scroll-margin-top:150px;}
+  .doc-card h3{font-size:16.5px;margin-bottom:8px;}
+  .doc-card .desc{font-size:13.5px;color:var(--ink-soft);margin-bottom:14px;min-height:20px;}
+  .desc[contenteditable="true"]{border:1px dashed var(--line);border-radius:8px;padding:6px 8px;cursor:text;}
+
+  .link-box{border:1.5px dashed #D8C7A8;background:#FBF4E4;border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+  .link-box .lb-label{font-size:12px;font-weight:700;color:var(--maroon-dark);display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+  .link-box input{width:100%;border:none;background:transparent;font-size:13.5px;font-family:'Inter',sans-serif;color:var(--ink-soft);padding:2px 0;}
+  .link-box input:focus{outline:none;color:var(--ink);}
+  .link-box input::placeholder{color:var(--ink-mute);font-style:italic;}
+
+  a.open-btn, button.open-btn{
+    display:inline-flex;align-items:center;gap:8px;background:var(--maroon);color:#fff;
+    text-decoration:none;padding:10px 18px;border-radius:9px;font-size:14px;font-weight:600;border:none;cursor:pointer;
+  }
+  a.open-btn:hover, button.open-btn:hover{background:var(--maroon-dark);}
+  a.open-btn.disabled{background:#D8CBBB;color:#8A7F6E;pointer-events:none;cursor:default;}
+
+  .file-card{text-align:center;}
+  .file-card .icon{font-size:40px;margin-bottom:10px;}
+  .file-card h3{font-size:17px;color:var(--maroon-dark);margin-bottom:8px;}
+  .file-card .desc{text-align:center;}
+
+  body.editing .link-box{display:block;}
+  body:not(.editing) .link-box{display:none;}
+  body:not(.editing) [contenteditable="true"]{border:none;padding:0;}
+  body:not(.editing) .desc{min-height:0;}
+
+  @media (max-width:960px){
+    aside.sidebar{display:none;}
+    main.content{padding:20px 16px 80px;}
+  }
+  @media print{
+    header.top .toolbar, aside.sidebar{display:none !important;}
+    body{background:#fff;}
+    body.editing .link-box{display:none !important;}
+    header.top{position:static;color:#000;background:#fff;border-bottom:2px solid var(--maroon);}
+    .brand-name,.manual-title h1{color:var(--maroon);}
+    .logo{background:var(--maroon);color:#fff;}
+    section.block{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body class="editing">
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <div class="logo">B.</div>
+      <div>
+        <div class="brand-name">BA LÁ</div>
+        <div class="brand-sub">ƯỚC TRỌN TINH HOA GIỮ NGUYÊN VỊ TRÀ</div>
+      </div>
+    </div>
+    <div class="manual-title">
+      <h1>CẨM NANG VẬN HÀNH</h1>
+      <div class="manual-meta">
+        [ <span contenteditable="true" data-key="client-name">Ba Lá-ước trọn tinh hoa-giữ nguyên vị trà</span> ] ·
+        [ <span contenteditable="true" data-key="client-addr">Quảng Oai-hà nội</span> ] ·
+        Gói: [ <span contenteditable="true" data-key="client-plan">Tên gói dịch vụ</span> ]
+      </div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <button class="btn dark" onclick="duplicateForNewClient()">⎘ Tạo bản sao cho khách mới</button>
+    <button class="btn dark on" id="editToggle" onclick="toggleEdit()">🔒 Tắt chế độ chỉnh sửa</button>
+    <button class="btn light" onclick="window.print()">📄 Tải PDF toàn bộ</button>
+    <button class="btn light" onclick="downloadHtml()">💾 Tải file HTML đã lưu</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"><div class="sec-label">📦 KHU VỰC &amp; NGUYÊN VẬT LIỆU</div><a class="sub-link" href="#card-2-1" data-target="card-2-1">2.1 Quầy bar</a><a class="sub-link" href="#card-2-2" data-target="card-2-2">2.2 Bảo quản NVL</a><a class="sub-link" href="#card-2-3" data-target="card-2-3">2.3 Nguyên tắc bảo quản NVL</a><a class="sub-link" href="#card-2-4" data-target="card-2-4">2.4 Tiêu chuẩn sắp xếp kho</a><a class="sub-link" href="#card-2-5" data-target="card-2-5">2.5 Quy trình nhập - xuất kho</a><a class="sub-link" href="#card-2-6" data-target="card-2-6">2.6 Form kiểm kho</a><div class="sec-label">🍹 SẢN PHẨM</div><a class="sub-link" href="#card-3-1" data-target="card-3-1">3.1 Công thức và Cách làm</a><a class="sub-link" href="#card-3-2" data-target="card-3-2">3.2 Giá vốn sản phẩm</a><div class="sec-label">📊 BÁO CÁO &amp; TÀI CHÍNH</div><a class="sub-link" href="#card-4-1" data-target="card-4-1">4.1 Quản lý nguyên vật liệu</a><a class="sub-link active" href="#card-4-2" data-target="card-4-2">4.2 Theo dõi chi phí - lợi nhuận</a><div class="sec-label">🗂️ FILE MẪU</div><a class="sub-link" href="#card-file-1" data-target="card-file-1">File kiểm kho ngày</a><a class="sub-link" href="#card-file-2" data-target="card-file-2">File kiểm kho định kỳ (tuần/tháng)</a><a class="sub-link" href="#card-file-3" data-target="card-file-3">File báo cáo kết ca</a></aside>
+  <main class="content" id="content"><section class="block" id="sec-kv"><h2>📦 KHU VỰC &amp; NGUYÊN VẬT LIỆU</h2><div class="card-grid">
+  <div class="doc-card" id="card-2-1">
+    <h3>2.1 Quầy bar</h3>
+    <div class="desc" contenteditable="true" data-key="2-1-desc" oninput="onDescInput('2-1', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('2-1', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-2-1">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-2-2">
+    <h3>2.2 Bảo quản NVL</h3>
+    <div class="desc" contenteditable="true" data-key="2-2-desc" oninput="onDescInput('2-2', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('2-2', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-2-2">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-2-3">
+    <h3>2.3 Nguyên tắc bảo quản NVL</h3>
+    <div class="desc" contenteditable="true" data-key="2-3-desc" oninput="onDescInput('2-3', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('2-3', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-2-3">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-2-4">
+    <h3>2.4 Tiêu chuẩn sắp xếp kho</h3>
+    <div class="desc" contenteditable="true" data-key="2-4-desc" oninput="onDescInput('2-4', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('2-4', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-2-4">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-2-5">
+    <h3>2.5 Quy trình nhập - xuất kho</h3>
+    <div class="desc" contenteditable="true" data-key="2-5-desc" oninput="onDescInput('2-5', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('2-5', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-2-5">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-2-6">
+    <h3>2.6 Form kiểm kho</h3>
+    <div class="desc" contenteditable="true" data-key="2-6-desc" oninput="onDescInput('2-6', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('2-6', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-2-6">↗ Mở link tài liệu</a>
+  </div></div></section><section class="block" id="sec-sp"><h2>🍹 SẢN PHẨM</h2><div class="card-grid">
+  <div class="doc-card" id="card-3-1">
+    <h3>3.1 Công thức và Cách làm</h3>
+    <div class="desc" contenteditable="true" data-key="3-1-desc" oninput="onDescInput('3-1', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('3-1', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-3-1">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-3-2">
+    <h3>3.2 Giá vốn sản phẩm</h3>
+    <div class="desc" contenteditable="true" data-key="3-2-desc" oninput="onDescInput('3-2', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('3-2', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-3-2">↗ Mở link tài liệu</a>
+  </div></div></section><section class="block" id="sec-bc"><h2>📊 BÁO CÁO &amp; TÀI CHÍNH</h2><div class="card-grid">
+  <div class="doc-card" id="card-4-1">
+    <h3>4.1 Quản lý nguyên vật liệu</h3>
+    <div class="desc" contenteditable="true" data-key="4-1-desc" oninput="onDescInput('4-1', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="" oninput="onLinkInput('4-1', this)">
+    </div>
+    <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-4-1">↗ Mở link tài liệu</a>
+  </div>
+  <div class="doc-card" id="card-4-2">
+    <h3>4.2 Theo dõi chi phí - lợi nhuận</h3>
+    <div class="desc" contenteditable="true" data-key="4-2-desc" oninput="onDescInput('4-2', this)">Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="file:///C:/Users/Admin/Downloads/dashboard-loi-lo.html" oninput="onLinkInput('4-2', this)">
+    </div>
+    <a class="open-btn " href="file:///C:/Users/Admin/Downloads/dashboard-loi-lo.html" target="_blank" rel="noopener" id="btn-4-2">↗ Mở link tài liệu</a>
+  </div></div></section><section class="block" id="sec-filemau"><h2>🗂️ FILE MẪU</h2><div class="card-grid">
+    <div class="doc-card file-card" id="card-file-1">
+      <div class="icon">📦</div>
+      <h3>File kiểm kho ngày</h3>
+      <div class="desc">Mẫu kiểm kho nguyên vật liệu hàng ngày — đầu ca/cuối ca.</div>
+      <div class="link-box">
+        <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+        <input type="text" placeholder="https://..." value="" oninput="onLinkInput('file-1', this)">
+      </div>
+      <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-file-1">↗ Mở link tài liệu</a>
+    </div>
+    <div class="doc-card file-card" id="card-file-2">
+      <div class="icon">🗃️</div>
+      <h3>File kiểm kho định kỳ (tuần/tháng)</h3>
+      <div class="desc">Mẫu kiểm kho định kỳ — đối chiếu tồn kho thực tế so với sổ sách.</div>
+      <div class="link-box">
+        <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+        <input type="text" placeholder="https://..." value="https://docs.google.com/spreadsheets/d/1ZStBkWj5ju35vUXMhYSW7smSBtN01-5V/edit?usp=drive_link&amp;ouid=101765610172481199098&amp;rtpof=true&amp;sd=true" oninput="onLinkInput('file-2', this)">
+      </div>
+      <a class="open-btn " href="https://docs.google.com/spreadsheets/d/1ZStBkWj5ju35vUXMhYSW7smSBtN01-5V/edit?usp=drive_link&amp;ouid=101765610172481199098&amp;rtpof=true&amp;sd=true" target="_blank" rel="noopener" id="btn-file-2">↗ Mở link tài liệu</a>
+    </div>
+    <div class="doc-card file-card" id="card-file-3">
+      <div class="icon">📋</div>
+      <h3>File báo cáo kết ca</h3>
+      <div class="desc">Mẫu báo cáo doanh thu, sự cố, bàn giao cuối ca.</div>
+      <div class="link-box">
+        <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+        <input type="text" placeholder="https://..." value="" oninput="onLinkInput('file-3', this)">
+      </div>
+      <a class="open-btn disabled" href="#" target="_blank" rel="noopener" id="btn-file-3">↗ Mở link tài liệu</a>
+    </div></div></section></main>
+</div>
+
+<script>
+/* ---------------- DATA MODEL ---------------- */
+const manual = [
+  { id:'kv', label:'KHU VỰC & NGUYÊN VẬT LIỆU', icon:'📦', subs:[
+    { id:'2-1', num:'2.1', title:'Quầy bar' },
+    { id:'2-2', num:'2.2', title:'Bảo quản NVL' },
+    { id:'2-3', num:'2.3', title:'Nguyên tắc bảo quản NVL' },
+    { id:'2-4', num:'2.4', title:'Tiêu chuẩn sắp xếp kho' },
+    { id:'2-5', num:'2.5', title:'Quy trình nhập - xuất kho' },
+    { id:'2-6', num:'2.6', title:'Form kiểm kho' },
+  ]},
+  { id:'sp', label:'SẢN PHẨM', icon:'🍹', subs:[
+    { id:'3-1', num:'3.1', title:'Công thức và Cách làm' },
+    { id:'3-2', num:'3.2', title:'Giá vốn sản phẩm' },
+  ]},
+  { id:'bc', label:'BÁO CÁO & TÀI CHÍNH', icon:'📊', subs:[
+    { id:'4-1', num:'4.1', title:'Quản lý nguyên vật liệu' },
+    { id:'4-2', num:'4.2', title:'Theo dõi chi phí - lợi nhuận' },
+  ]},
+];
+const fileMau = [
+  { id:'file-1', icon:'📦', title:'File kiểm kho ngày', desc:'Mẫu kiểm kho nguyên vật liệu hàng ngày — đầu ca/cuối ca.' },
+  { id:'file-2', icon:'🗃️', title:'File kiểm kho định kỳ (tuần/tháng)', desc:'Mẫu kiểm kho định kỳ — đối chiếu tồn kho thực tế so với sổ sách.' },
+  { id:'file-3', icon:'📋', title:'File báo cáo kết ca', desc:'Mẫu báo cáo doanh thu, sự cố, bàn giao cuối ca.' },
+];
+
+const STORAGE_KEY = 'gammalab_camnang_data';
+function loadData(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveData(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+let data = loadData();
+
+/* ---------------- RENDER ---------------- */
+const sidebarEl = document.getElementById('sidebar');
+const contentEl = document.getElementById('content');
+
+function docCard(sub){
+  const link = (data[sub.id]||{}).link || '';
+  const desc = (data[sub.id]||{}).desc || '';
+  return `
+  <div class="doc-card" id="card-${sub.id}">
+    <h3>${sub.num} ${sub.title}</h3>
+    <div class="desc" contenteditable="true" data-key="${sub.id}-desc" oninput="onDescInput('${sub.id}', this)">${desc || 'Bật chế độ chỉnh sửa rồi dán link tài liệu vào đây...'}</div>
+    <div class="link-box">
+      <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+      <input type="text" placeholder="https://..." value="${link}" oninput="onLinkInput('${sub.id}', this)">
+    </div>
+    <a class="open-btn ${link?'':'disabled'}" href="${link||'#'}" target="_blank" rel="noopener" id="btn-${sub.id}">↗ Mở link tài liệu</a>
+  </div>`;
+}
+
+function renderSidebar(){
+  let html = '';
+  manual.forEach(sec=>{
+    html += `<div class="sec-label">${sec.icon} ${sec.label}</div>`;
+    sec.subs.forEach(sub=>{
+      html += `<a class="sub-link" href="#card-${sub.id}" data-target="card-${sub.id}">${sub.num} ${sub.title}</a>`;
+    });
+  });
+  html += `<div class="sec-label">🗂️ FILE MẪU</div>`;
+  fileMau.forEach(f=>{
+    html += `<a class="sub-link" href="#card-${f.id}" data-target="card-${f.id}">${f.title}</a>`;
+  });
+  sidebarEl.innerHTML = html;
+}
+
+function renderContent(){
+  let html = '';
+  manual.forEach(sec=>{
+    html += `<section class="block" id="sec-${sec.id}"><h2>${sec.icon} ${sec.label}</h2><div class="card-grid">`;
+    sec.subs.forEach(sub=>{ html += docCard(sub); });
+    html += `</div></section>`;
+  });
+  html += `<section class="block" id="sec-filemau"><h2>🗂️ FILE MẪU</h2><div class="card-grid">`;
+  fileMau.forEach(f=>{
+    const link = (data[f.id]||{}).link || '';
+    html += `
+    <div class="doc-card file-card" id="card-${f.id}">
+      <div class="icon">${f.icon}</div>
+      <h3>${f.title}</h3>
+      <div class="desc">${f.desc}</div>
+      <div class="link-box">
+        <div class="lb-label">🔗 LINK TÀI LIỆU (dán riêng cho từng khách)</div>
+        <input type="text" placeholder="https://..." value="${link}" oninput="onLinkInput('${f.id}', this)">
+      </div>
+      <a class="open-btn ${link?'':'disabled'}" href="${link||'#'}" target="_blank" rel="noopener" id="btn-${f.id}">↗ Mở link tài liệu</a>
+    </div>`;
+  });
+  html += `</div></section>`;
+  contentEl.innerHTML = html;
+}
+
+function onLinkInput(id, el){
+  data[id] = data[id] || {};
+  data[id].link = el.value;
+  saveData(data);
+  const btn = document.getElementById('btn-'+id);
+  if(el.value){ btn.href = el.value; btn.classList.remove('disabled'); }
+  else{ btn.href = '#'; btn.classList.add('disabled'); }
+}
+function onDescInput(id, el){
+  data[id] = data[id] || {};
+  data[id].desc = el.innerText;
+  saveData(data);
+}
+
+/* ---------------- TOOLBAR ACTIONS ---------------- */
+function toggleEdit(){
+  document.body.classList.toggle('editing');
+  const on = document.body.classList.contains('editing');
+  document.getElementById('editToggle').innerHTML = on ? '🔒 Tắt chế độ chỉnh sửa' : '🔓 Bật chế độ chỉnh sửa (team dùng)';
+  document.getElementById('editToggle').classList.toggle('on', on);
+  localStorage.setItem('gammalab_edit_mode', on ? '1':'0');
+}
+
+function duplicateForNewClient(){
+  if(!confirm('Thao tác này sẽ xoá toàn bộ link tài liệu và thông tin khách hàng hiện tại để tạo bản trống cho khách mới.\nBạn chắc chắn muốn tiếp tục?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem('gammalab_meta');
+  location.reload();
+}
+
+function downloadHtml(){
+  // Bake current values into the DOM before exporting, so the saved file opens with the same content
+  const clone = document.documentElement.cloneNode(true);
+  const blob = new Blob(['<!DOCTYPE html>\n'+clone.outerHTML], {type:'text/html'});
+  const clientName = (document.querySelector('[data-key="client-name"]').innerText || 'khach-hang').trim().replace(/\s+/g,'-').toLowerCase();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cam-nang-van-hanh-${clientName}.html`;
+  a.click();
+}
+
+/* ---------------- HEADER META (client name/address/plan) ---------------- */
+function loadMeta(){
+  const meta = JSON.parse(localStorage.getItem('gammalab_meta')||'{}');
+  document.querySelectorAll('.manual-meta [data-key]').forEach(el=>{
+    if(meta[el.dataset.key]) el.innerText = meta[el.dataset.key];
+    el.addEventListener('input', ()=>{
+      const m = JSON.parse(localStorage.getItem('gammalab_meta')||'{}');
+      m[el.dataset.key] = el.innerText;
+      localStorage.setItem('gammalab_meta', JSON.stringify(m));
+    });
+  });
+}
+
+/* ---------------- SCROLLSPY ---------------- */
+function setupScrollspy(){
+  const links = [...document.querySelectorAll('.sub-link')];
+  const targets = links.map(l=>document.getElementById(l.dataset.target)).filter(Boolean);
+  window.addEventListener('scroll', ()=>{
+    let currentId = null;
+    targets.forEach(t=>{ if(t.getBoundingClientRect().top < 200) currentId = t.id; });
+    links.forEach(l=> l.classList.toggle('active', l.dataset.target === currentId));
+  });
+}
+
+/* ---------------- INIT ---------------- */
+renderSidebar();
+renderContent();
+loadMeta();
+setupScrollspy();
+const savedEdit = localStorage.getItem('gammalab_edit_mode');
+if(savedEdit === '0'){ document.body.classList.remove('editing'); document.getElementById('editToggle').innerHTML = '🔓 Bật chế độ chỉnh sửa (team dùng)'; }
+else{ document.getElementById('editToggle').innerHTML = '🔒 Tắt chế độ chỉnh sửa'; document.getElementById('editToggle').classList.add('on'); }
+</script>
+
+
+</body></html>
